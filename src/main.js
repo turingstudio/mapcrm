@@ -1,16 +1,13 @@
 import * as maplibregl from "/vendor/maplibre-gl/maplibre-gl.mjs";
 
-const { invoke } = window.__TAURI__.core;
-
-async function greet() {
-  // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-  const name = $("#greet-input").val();
-  const message = await invoke("greet", { name });
-  $("#greet-msg").text(message);
-}
-
 const PMTILES_URL = "/data/basemap.pmtiles";
 const BOSTON_CENTER = [-71.0589, 42.3601];
+
+const TEST_CONTACT = {
+  name: "Test Contact",
+  address: "1 City Hall Square, Boston, MA 02201",
+  lngLat: BOSTON_CENTER,
+};
 
 function initMap() {
   const protocol = new pmtiles.Protocol();
@@ -82,11 +79,19 @@ function initMap() {
   });
 }
 
-$(function () {
-  $("#greet-form").on("submit", function (e) {
-    e.preventDefault();
-    greet();
-  });
+function addContactMarker(map, contact) {
+  const content = document.createElement("div");
+  const name = document.createElement("strong");
+  name.textContent = contact.name;
+  const address = document.createElement("div");
+  address.textContent = contact.address;
+  content.append(name, address);
 
-  initMap();
+  const popup = new maplibregl.Popup({ offset: 25 }).setDOMContent(content);
+  new maplibregl.Marker().setLngLat(contact.lngLat).setPopup(popup).addTo(map);
+}
+
+$(function () {
+  const map = initMap();
+  addContactMarker(map, TEST_CONTACT);
 });

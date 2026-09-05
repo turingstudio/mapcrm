@@ -1,6 +1,10 @@
 import * as maplibregl from "/vendor/maplibre-gl/maplibre-gl.mjs";
 
-const PMTILES_URL = "/data/basemap.pmtiles";
+const { convertFileSrc } = window.__TAURI__.core;
+
+// Served through Tauri's asset protocol (not the frontendDist static server) because
+// PMTiles needs HTTP Range support, which the plain dev/prod asset server doesn't provide.
+const PMTILES_URL = convertFileSrc("/Users/nick/dev/turing/mapcrm/src/data/basemap.pmtiles");
 const BOSTON_CENTER = [-71.0589, 42.3601];
 
 const TEST_CONTACT = {

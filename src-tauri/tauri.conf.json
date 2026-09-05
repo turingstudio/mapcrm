@@ -19,7 +19,7 @@
       "csp": null,
       "assetProtocol": {
         "enable": true,
-        "scope": ["/Users/nick/dev/turing/mapcrm/src/data/*"]
+        "scope": []
       }
     }
   },

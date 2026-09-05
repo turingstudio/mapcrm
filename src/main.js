@@ -1,10 +1,7 @@
 import * as maplibregl from "/vendor/maplibre-gl/maplibre-gl.mjs";
 
-const { convertFileSrc } = window.__TAURI__.core;
+const { convertFileSrc, invoke } = window.__TAURI__.core;
 
-// Served through Tauri's asset protocol (not the frontendDist static server) because
-// PMTiles needs HTTP Range support, which the plain dev/prod asset server doesn't provide.
-const PMTILES_URL = convertFileSrc("/Users/nick/dev/turing/mapcrm/src/data/basemap.pmtiles");
 const BOSTON_CENTER = [-71.0589, 42.3601];
 
 const TEST_CONTACT = {
@@ -13,7 +10,7 @@ const TEST_CONTACT = {
   lngLat: BOSTON_CENTER,
 };
 
-function initMap() {
+function initMap(pmtilesUrl) {
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile);
 
@@ -24,7 +21,7 @@ function initMap() {
       sources: {
         basemap: {
           type: "vector",
-          url: `pmtiles://${PMTILES_URL}`,
+          url: `pmtiles://${pmtilesUrl}`,
         },
       },
       layers: [
@@ -95,7 +92,10 @@ function addContactMarker(map, contact) {
   new maplibregl.Marker().setLngLat(contact.lngLat).setPopup(popup).addTo(map);
 }
 
-$(function () {
-  const map = initMap();
+$(async function () {
+  // Served through Tauri's asset protocol (not the frontendDist static server) because
+  // PMTiles needs HTTP Range support, which the plain dev/prod asset server doesn't provide.
+  const pmtilesPath = await invoke("pmtiles_path");
+  const map = initMap(convertFileSrc(pmtilesPath));
   addContactMarker(map, TEST_CONTACT);
 });

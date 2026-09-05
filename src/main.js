@@ -11,6 +11,10 @@ const TEST_CONTACT = {
 };
 
 function initMap(pmtilesUrl) {
+  // MapLibre's auto-detected worker script URL doesn't resolve correctly under Tauri's
+  // production asset serving (it ends up empty, so the worker never starts) - set it explicitly.
+  maplibregl.setWorkerUrl(new URL("/vendor/maplibre-gl/maplibre-gl-worker.mjs", window.location.href).href);
+
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile);
 

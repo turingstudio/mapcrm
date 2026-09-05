@@ -5,15 +5,81 @@
     <link rel="stylesheet" href="/vendor/maplibre-gl/maplibre-gl.css" />
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
+    <title>mapcrm</title>
     <script src="/vendor/jquery.min.js"></script>
     <script src="/vendor/pmtiles.js"></script>
+    <script src="/vendor/plugin-sql.js"></script>
     <script type="module" src="/main.js" defer></script>
   </head>
 
   <body>
-    <main class="container">
-      <div id="map"></div>
+    <nav id="tabs">
+      <button class="tab-button" data-tab="crm">CRM</button>
+      <button class="tab-button" data-tab="map">Map</button>
+    </nav>
+
+    <main>
+      <section id="crm-panel" class="tab-panel">
+        <div class="toolbar">
+          <h1>Practices</h1>
+          <button id="add-practice-btn">Add Practice</button>
+        </div>
+        <table id="practices-table">
+          <thead>
+            <tr>
+              <th>Practice</th>
+              <th>Contact</th>
+              <th>Phone</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="practices-tbody"></tbody>
+        </table>
+        <p id="practices-empty" class="empty-state" hidden>No practices yet. Add one to get started.</p>
+      </section>
+
+      <section id="map-panel" class="tab-panel">
+        <div id="map"></div>
+      </section>
     </main>
+
+    <div id="practice-modal" class="modal" hidden>
+      <div class="modal-content">
+        <h2 id="practice-modal-title">Add Practice</h2>
+        <form id="practice-form">
+          <input type="hidden" id="practice-id" />
+          <label>
+            Practice Name
+            <input type="text" id="practice-name" required />
+          </label>
+          <label>
+            Contact Name
+            <input type="text" id="practice-contact-name" />
+          </label>
+          <label>
+            Phone
+            <input type="tel" id="practice-phone" />
+          </label>
+          <label>
+            Email
+            <input type="email" id="practice-email" />
+          </label>
+          <label>
+            Address
+            <input type="text" id="practice-address" />
+          </label>
+          <label>
+            Notes
+            <textarea id="practice-notes" rows="3"></textarea>
+          </label>
+          <div class="modal-actions">
+            <button type="button" id="practice-cancel-btn">Cancel</button>
+            <button type="submit">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
   </body>
 </html>

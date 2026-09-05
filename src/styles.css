@@ -175,6 +175,10 @@ main {
   color: #b3261e;
 }
 
+.row-actions .view-map-btn {
+  color: #396cd8;
+}
+
 .empty-state {
   color: #888888;
   text-align: center;
@@ -234,6 +238,13 @@ main {
 #practice-form textarea {
   font-size: 1em;
   color: #0f0f0f;
+}
+
+.geocode-status {
+  font-size: 0.85em;
+  color: #888888;
+  margin: 0;
+  min-height: 1.2em;
 }
 
 .modal-actions {

@@ -6,6 +6,7 @@ const Database = window.PluginSqlDatabase;
 const BOSTON_CENTER = [-71.0589, 42.3601];
 
 let map = null;
+const practiceMarkers = new Map();
 
 function initMap(pmtilesUrl) {
   // MapLibre's auto-detected worker script URL doesn't resolve correctly under Tauri's
@@ -81,20 +82,54 @@ function initMap(pmtilesUrl) {
   });
 }
 
+function activateTab(tab) {
+  $(".tab-button").removeClass("active");
+  $(`.tab-button[data-tab="${tab}"]`).addClass("active");
+  $(".tab-panel").removeClass("active");
+  $(`#${tab}-panel`).addClass("active");
+  if (tab === "map") {
+    map?.resize();
+  }
+}
+
 function initTabs() {
   $(".tab-button").on("click", function () {
-    const tab = $(this).data("tab");
-    $(".tab-button").removeClass("active");
-    $(this).addClass("active");
-    $(".tab-panel").removeClass("active");
-    $(`#${tab}-panel`).addClass("active");
-    if (tab === "map") {
-      map?.resize();
-    }
+    activateTab($(this).data("tab"));
   });
+  activateTab("crm");
+}
 
-  $('.tab-button[data-tab="crm"]').addClass("active");
-  $("#crm-panel").addClass("active");
+function renderMapMarkers(practices) {
+  if (!map) return;
+
+  for (const marker of practiceMarkers.values()) marker.remove();
+  practiceMarkers.clear();
+
+  for (const practice of practices) {
+    if (practice.lat == null || practice.lng == null) continue;
+
+    const content = document.createElement("div");
+    const name = document.createElement("strong");
+    name.textContent = practice.name;
+    const address = document.createElement("div");
+    address.textContent = practice.address || "";
+    content.append(name, address);
+
+    const popup = new maplibregl.Popup({ offset: 25 }).setDOMContent(content);
+    const marker = new maplibregl.Marker()
+      .setLngLat([practice.lng, practice.lat])
+      .setPopup(popup)
+      .addTo(map);
+
+    practiceMarkers.set(practice.id, marker);
+  }
+}
+
+function viewPracticeOnMap(practice) {
+  if (practice.lat == null || practice.lng == null || !map) return;
+  activateTab("map");
+  map.flyTo({ center: [practice.lng, practice.lat], zoom: 15 });
+  practiceMarkers.get(practice.id)?.togglePopup();
 }
 
 // --- CRM ---
@@ -104,6 +139,7 @@ let db = null;
 async function loadPractices() {
   const rows = await db.select("SELECT * FROM practices ORDER BY name COLLATE NOCASE");
   renderPractices(rows);
+  renderMapMarkers(rows);
 }
 
 function renderPractices(rows) {
@@ -120,6 +156,9 @@ function renderPractices(rows) {
     $("<td>").text(practice.address || "").appendTo($row);
 
     const $actions = $("<td>").addClass("row-actions");
+    if (practice.lat != null && practice.lng != null) {
+      $("<button>").text("View on Map").addClass("view-map-btn").appendTo($actions);
+    }
     $("<button>").text("Edit").addClass("edit-btn").appendTo($actions);
     $("<button>").text("Delete").addClass("delete-btn").appendTo($actions);
     $actions.appendTo($row);
@@ -137,6 +176,7 @@ function openPracticeModal(practice) {
   $("#practice-email").val(practice?.email ?? "");
   $("#practice-address").val(practice?.address ?? "");
   $("#practice-notes").val(practice?.notes ?? "");
+  $("#practice-geocode-status").text("");
   $("#practice-modal").prop("hidden", false);
   $("#practice-name").trigger("focus");
 }
@@ -147,28 +187,46 @@ function closePracticeModal() {
 
 async function savePractice() {
   const id = $("#practice-id").val();
+  const address = $("#practice-address").val().trim();
   const values = [
     $("#practice-name").val().trim(),
     $("#practice-contact-name").val().trim(),
     $("#practice-phone").val().trim(),
     $("#practice-email").val().trim(),
-    $("#practice-address").val().trim(),
+    address,
     $("#practice-notes").val().trim(),
   ];
+
+  const $status = $("#practice-geocode-status");
+  const $submitBtn = $("#practice-form button[type=submit]");
+  $status.text(address ? "Locating address…" : "");
+  $submitBtn.prop("disabled", true);
+
+  let coords = null;
+  try {
+    coords = await invoke("geocode_address", { address });
+  } catch {
+    // Leave coords null - practice is still saved without map coordinates.
+  }
+  const [lat, lng] = coords ?? [null, null];
+  if (address && coords == null) {
+    $status.text("Couldn't locate this address on the map - saved without a pin.");
+  }
 
   if (id) {
     await db.execute(
       `UPDATE practices SET name = $1, contact_name = $2, phone = $3, email = $4, address = $5, notes = $6,
-       updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = $7`,
-      [...values, id],
+       lat = $7, lng = $8, updated_at = strftime('%Y-%m-%dT%H:%M:%fZ', 'now') WHERE id = $9`,
+      [...values, lat, lng, id],
     );
   } else {
     await db.execute(
-      "INSERT INTO practices (name, contact_name, phone, email, address, notes) VALUES ($1, $2, $3, $4, $5, $6)",
-      values,
+      "INSERT INTO practices (name, contact_name, phone, email, address, notes, lat, lng) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+      [...values, lat, lng],
     );
   }
 
+  $submitBtn.prop("disabled", false);
   closePracticeModal();
   await loadPractices();
 }
@@ -195,6 +253,10 @@ function initCrm() {
   $("#practices-tbody").on("click", ".delete-btn", function () {
     deletePractice($(this).closest("tr").data("practice").id);
   });
+
+  $("#practices-tbody").on("click", ".view-map-btn", function () {
+    viewPracticeOnMap($(this).closest("tr").data("practice"));
+  });
 }
 
 $(async function () {
@@ -208,4 +270,5 @@ $(async function () {
   // PMTiles needs HTTP Range support, which the plain dev/prod asset server doesn't provide.
   const pmtilesPath = await invoke("pmtiles_path");
   map = initMap(convertFileSrc(pmtilesPath));
+  await loadPractices();
 });

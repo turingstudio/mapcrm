@@ -2,10 +2,12 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/vendor/maplibre-gl/maplibre-gl.css" />
     <link rel="stylesheet" href="styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tauri App</title>
     <script src="/vendor/jquery.min.js"></script>
+    <script src="/vendor/pmtiles.js"></script>
     <script type="module" src="/main.js" defer></script>
   </head>
 
@@ -35,6 +37,8 @@
         <button type="submit">Greet</button>
       </form>
       <p id="greet-msg"></p>
+
+      <div id="map"></div>
     </main>
   </body>
 </html>

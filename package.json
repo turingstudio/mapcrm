@@ -10,6 +10,8 @@
     "@tauri-apps/cli": "^2"
   },
   "dependencies": {
-    "jquery": "^4.0.0"
+    "jquery": "^4.0.0",
+    "maplibre-gl": "^6.7.0",
+    "pmtiles": "^4.5.0"
   }
 }

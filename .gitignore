@@ -22,3 +22,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# PMTiles archives: large binaries, not committed until we decide on distribution
+*.pmtiles
+
+# Local map-tile build tooling/scratch (Planetiler jar, OSM extracts, its data/sources cache)
+/build/
+/data/

@@ -21,24 +21,62 @@
 
     <main>
       <section id="crm-panel" class="tab-panel">
-        <div class="toolbar">
-          <h1>Practices</h1>
-          <button id="add-practice-btn">Add Practice</button>
+        <div id="practices-list-view">
+          <div class="toolbar">
+            <h1>Practices</h1>
+            <button id="add-practice-btn">Add Practice</button>
+          </div>
+          <table id="practices-table">
+            <thead>
+              <tr>
+                <th>Practice</th>
+                <th>Contact</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Address</th>
+              </tr>
+            </thead>
+            <tbody id="practices-tbody"></tbody>
+          </table>
+          <p id="practices-empty" class="empty-state" hidden>No practices yet. Add one to get started.</p>
         </div>
-        <table id="practices-table">
-          <thead>
-            <tr>
-              <th>Practice</th>
-              <th>Contact</th>
-              <th>Phone</th>
-              <th>Email</th>
-              <th>Address</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="practices-tbody"></tbody>
-        </table>
-        <p id="practices-empty" class="empty-state" hidden>No practices yet. Add one to get started.</p>
+
+        <div id="practice-detail-view" hidden>
+          <div class="detail-fields">
+            <button type="button" id="back-to-list-btn">&larr; Back to Practices</button>
+            <input type="hidden" id="detail-id" />
+            <label>
+              Practice Name
+              <input type="text" id="detail-name" required />
+            </label>
+            <label>
+              Contact Name
+              <input type="text" id="detail-contact-name" />
+            </label>
+            <label>
+              Phone
+              <input type="tel" id="detail-phone" />
+            </label>
+            <label>
+              Email
+              <input type="email" id="detail-email" />
+            </label>
+            <label>
+              Address
+              <input type="text" id="detail-address" />
+            </label>
+            <label>
+              Notes
+              <textarea id="detail-notes" rows="2"></textarea>
+            </label>
+            <p id="detail-geocode-status" class="geocode-status"></p>
+            <div class="detail-actions">
+              <button type="button" id="detail-delete-btn" class="delete-btn">Delete</button>
+              <button type="button" id="detail-save-btn">Save</button>
+            </div>
+          </div>
+          <div id="detail-map"></div>
+        </div>
       </section>
 
       <section id="map-panel" class="tab-panel">
@@ -48,9 +86,8 @@
 
     <div id="practice-modal" class="modal" hidden>
       <div class="modal-content">
-        <h2 id="practice-modal-title">Add Practice</h2>
+        <h2>Add Practice</h2>
         <form id="practice-form">
-          <input type="hidden" id="practice-id" />
           <label>
             Practice Name
             <input type="text" id="practice-name" required />
@@ -77,7 +114,6 @@
           </label>
           <p id="practice-geocode-status" class="geocode-status"></p>
           <div class="modal-actions">
-            <button type="button" id="practice-delete-btn" class="delete-btn" hidden>Delete</button>
             <button type="button" id="practice-cancel-btn">Cancel</button>
             <button type="submit">Save</button>
           </div>

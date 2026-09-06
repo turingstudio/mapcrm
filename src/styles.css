@@ -127,9 +127,65 @@ main {
 
 /* CRM */
 
-#crm-panel {
-  padding: 1.5em;
+#practices-list-view {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding: 1.5em;
+}
+
+#practice-detail-view {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#practice-detail-view[hidden] {
+  display: none;
+}
+
+.detail-fields {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.5em;
+}
+
+#detail-map {
+  flex: 1;
+  min-height: 0;
+}
+
+#back-to-list-btn {
+  box-shadow: none;
+  margin-bottom: 1em;
+}
+
+.detail-fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+  font-size: 0.85em;
+  color: #555555;
+  margin-bottom: 0.8em;
+}
+
+.detail-fields input,
+.detail-fields textarea {
+  font-size: 1em;
+  color: #0f0f0f;
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.6em;
+  margin-top: 1em;
+}
+
+.detail-actions .delete-btn {
+  margin-right: auto;
 }
 
 .toolbar {
@@ -161,22 +217,16 @@ main {
   color: #888888;
 }
 
+#practices-table tbody tr {
+  cursor: pointer;
+}
+
 #practices-table tbody tr:hover {
   background-color: #fafafa;
 }
 
-.row-actions button {
-  padding: 0.3em 0.7em;
-  font-size: 0.85em;
-  box-shadow: none;
-}
-
 .delete-btn {
   color: #b3261e;
-}
-
-.row-actions .view-map-btn {
-  color: #396cd8;
 }
 
 .empty-state {
@@ -252,10 +302,6 @@ main {
   justify-content: flex-end;
   gap: 0.6em;
   margin-top: 1em;
-}
-
-.modal-actions #practice-delete-btn {
-  margin-right: auto;
 }
 
 @media (prefers-color-scheme: dark) {

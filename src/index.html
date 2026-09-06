@@ -45,30 +45,32 @@
           <div class="detail-fields">
             <button type="button" id="back-to-list-btn">&larr; Back to Practices</button>
             <input type="hidden" id="detail-id" />
-            <label>
-              Practice Name
-              <input type="text" id="detail-name" required />
-            </label>
-            <label>
-              Contact Name
-              <input type="text" id="detail-contact-name" />
-            </label>
-            <label>
-              Phone
-              <input type="tel" id="detail-phone" />
-            </label>
-            <label>
-              Email
-              <input type="email" id="detail-email" />
-            </label>
-            <label>
-              Address
-              <input type="text" id="detail-address" />
-            </label>
-            <label>
-              Notes
-              <textarea id="detail-notes" rows="2"></textarea>
-            </label>
+            <div class="field-grid">
+              <label>
+                Practice Name
+                <input type="text" id="detail-name" required />
+              </label>
+              <label>
+                Contact Name
+                <input type="text" id="detail-contact-name" />
+              </label>
+              <label>
+                Phone
+                <input type="tel" id="detail-phone" />
+              </label>
+              <label>
+                Email
+                <input type="email" id="detail-email" />
+              </label>
+              <label>
+                Address
+                <input type="text" id="detail-address" />
+              </label>
+              <label>
+                Notes
+                <textarea id="detail-notes" rows="2"></textarea>
+              </label>
+            </div>
             <p id="detail-geocode-status" class="geocode-status"></p>
             <div class="detail-actions">
               <button type="button" id="detail-delete-btn" class="delete-btn">Delete</button>

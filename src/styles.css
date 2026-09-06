@@ -252,6 +252,13 @@ main {
   height: 100%;
 }
 
+.popup-view-btn {
+  margin-top: 0.5em;
+  padding: 0.3em 0.7em;
+  font-size: 0.85em;
+  box-shadow: none;
+}
+
 /* Modal */
 
 .modal {

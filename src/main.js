@@ -125,7 +125,15 @@ function renderMapMarkers(practices) {
     name.textContent = practice.name;
     const address = document.createElement("div");
     address.textContent = practice.address || "";
-    content.append(name, address);
+    const viewBtn = document.createElement("button");
+    viewBtn.type = "button";
+    viewBtn.className = "popup-view-btn";
+    viewBtn.textContent = "View Details";
+    viewBtn.addEventListener("click", () => {
+      activateTab("crm");
+      showPracticeDetail(practice);
+    });
+    content.append(name, address, viewBtn);
 
     const popup = new maplibregl.Popup({ offset: 25 }).setDOMContent(content);
     const marker = new maplibregl.Marker()

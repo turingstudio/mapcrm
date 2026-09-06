@@ -9,6 +9,7 @@
     <script src="/vendor/jquery.min.js"></script>
     <script src="/vendor/pmtiles.js"></script>
     <script src="/vendor/plugin-sql.js"></script>
+    <script src="/vendor/plugin-dialog.js"></script>
     <script type="module" src="/main.js" defer></script>
   </head>
 
@@ -76,6 +77,7 @@
           </label>
           <p id="practice-geocode-status" class="geocode-status"></p>
           <div class="modal-actions">
+            <button type="button" id="practice-delete-btn" class="delete-btn" hidden>Delete</button>
             <button type="button" id="practice-cancel-btn">Cancel</button>
             <button type="submit">Save</button>
           </div>

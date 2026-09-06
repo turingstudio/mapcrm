@@ -160,7 +160,6 @@ function renderPractices(rows) {
       $("<button>").text("View on Map").addClass("view-map-btn").appendTo($actions);
     }
     $("<button>").text("Edit").addClass("edit-btn").appendTo($actions);
-    $("<button>").text("Delete").addClass("delete-btn").appendTo($actions);
     $actions.appendTo($row);
 
     $tbody.append($row);
@@ -177,6 +176,7 @@ function openPracticeModal(practice) {
   $("#practice-address").val(practice?.address ?? "");
   $("#practice-notes").val(practice?.notes ?? "");
   $("#practice-geocode-status").text("");
+  $("#practice-delete-btn").prop("hidden", !practice);
   $("#practice-modal").prop("hidden", false);
   $("#practice-name").trigger("focus");
 }
@@ -232,8 +232,12 @@ async function savePractice() {
 }
 
 async function deletePractice(id) {
-  if (!confirm("Delete this practice?")) return;
+  // window.confirm() isn't implemented by Tauri's webview and silently no-ops,
+  // so use the native dialog plugin instead.
+  const confirmed = await PluginDialog.ask("Delete this practice?", { title: "Confirm", kind: "warning" });
+  if (!confirmed) return;
   await db.execute("DELETE FROM practices WHERE id = $1", [id]);
+  closePracticeModal();
   await loadPractices();
 }
 
@@ -250,9 +254,7 @@ function initCrm() {
     openPracticeModal($(this).closest("tr").data("practice"));
   });
 
-  $("#practices-tbody").on("click", ".delete-btn", function () {
-    deletePractice($(this).closest("tr").data("practice").id);
-  });
+  $("#practice-delete-btn").on("click", () => deletePractice($("#practice-id").val()));
 
   $("#practices-tbody").on("click", ".view-map-btn", function () {
     viewPracticeOnMap($(this).closest("tr").data("practice"));

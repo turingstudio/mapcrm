@@ -171,7 +171,7 @@ main {
   box-shadow: none;
 }
 
-.row-actions .delete-btn {
+.delete-btn {
   color: #b3261e;
 }
 
@@ -252,6 +252,10 @@ main {
   justify-content: flex-end;
   gap: 0.6em;
   margin-top: 1em;
+}
+
+.modal-actions #practice-delete-btn {
+  margin-right: auto;
 }
 
 @media (prefers-color-scheme: dark) {

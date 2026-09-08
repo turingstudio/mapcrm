@@ -43,12 +43,23 @@ function compile(source) {
   return new Function("__escapeHtml", "data", `with (data) {\n${body}\n}`);
 }
 
+// Tauri's dev asset server content-sniffs every response and, if it starts with
+// "<", injects a live-reload <script> - wrapping the file in a synthetic
+// <html><head>...</head><body>...</body></html> shell when it isn't already a
+// full document. Only happens over the dev HTTP server (never in a production
+// build), but any template whose markup starts with "<" would otherwise get
+// polluted with that wrapper (and a script that re-runs on every render).
+function stripDevReloadWrapper(text) {
+  const match = /^<html><head><script>[\s\S]*?<\/script><\/head><body>([\s\S]*)<\/body><\/html>\s*$/.exec(text);
+  return match ? match[1] : text;
+}
+
 async function loadTemplateSource(templateName) {
   if (!templateSources.has(templateName)) {
     // .tmpl, not .html - Tauri's dev server treats any .html request as an SPA
     // navigation and always serves index.html for it, ignoring the real file.
     const response = await fetch(`/template/${templateName}.tmpl`);
-    templateSources.set(templateName, await response.text());
+    templateSources.set(templateName, stripDevReloadWrapper(await response.text()));
   }
   return templateSources.get(templateName);
 }

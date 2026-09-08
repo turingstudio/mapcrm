@@ -1,1 +1,9 @@
-{{each(i, practice) practices}}<tr data-id="${practice.id}"><td>${practice.name}</td><td>${practice.contact_name || ""}</td><td>${practice.phone || ""}</td><td>${practice.email || ""}</td><td>${practice.address || ""}</td></tr>{{/each}}
+{{each(i, practice) practices}}
+<tr data-id="${practice.id}">
+  <td>${practice.name}</td>
+  <td>${practice.contact_name || ""}</td>
+  <td>${practice.phone || ""}</td>
+  <td>${practice.email || ""}</td>
+  <td>${practice.address || ""}</td>
+</tr>
+{{/each}}

@@ -1,4 +1,5 @@
 import * as maplibregl from "/vendor/maplibre-gl/maplibre-gl.mjs";
+import { RenderUtil } from "./render-util.js";
 
 const { convertFileSrc, invoke } = window.__TAURI__.core;
 const Database = window.PluginSqlDatabase;
@@ -148,27 +149,22 @@ function renderMapMarkers(practices) {
 // --- CRM ---
 
 let db = null;
+let practicesById = new Map();
 
 async function loadPractices() {
   const rows = await db.select("SELECT * FROM practices ORDER BY name COLLATE NOCASE");
-  renderPractices(rows);
+  await renderPractices(rows);
   renderMapMarkers(rows);
 }
 
-function renderPractices(rows) {
+async function renderPractices(rows) {
   const $tbody = $("#practices-tbody").empty();
   $("#practices-empty").prop("hidden", rows.length > 0);
   $("#practices-table").prop("hidden", rows.length === 0);
 
-  for (const practice of rows) {
-    const $row = $("<tr>").data("practice", practice);
-    $("<td>").text(practice.name).appendTo($row);
-    $("<td>").text(practice.contact_name || "").appendTo($row);
-    $("<td>").text(practice.phone || "").appendTo($row);
-    $("<td>").text(practice.email || "").appendTo($row);
-    $("<td>").text(practice.address || "").appendTo($row);
-    $tbody.append($row);
-  }
+  practicesById = new Map(rows.map((practice) => [String(practice.id), practice]));
+  const rowsHtml = await RenderUtil.render("practices-table-rows", { practices: rows });
+  $tbody.append(rowsHtml);
 }
 
 async function geocodeWithStatus(address, $status) {
@@ -320,7 +316,7 @@ function initCrm() {
   });
 
   $("#practices-tbody").on("click", "tr", function () {
-    showPracticeDetail($(this).data("practice"));
+    showPracticeDetail(practicesById.get($(this).attr("data-id")));
   });
 
   $("#back-to-list-btn").on("click", showPracticesList);
